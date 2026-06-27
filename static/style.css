@@ -412,21 +412,21 @@ header p {
     transform: scale(1.05);
 }
 
-/* Modal Overlay - non-fullscreen content but fullscreen overlay to intercept clicks */
+/* Modal Overlay - absolute positioning to scroll with the page */
 .modal-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0); /* Totalmente transparente, sem escurecimento geral */
-    backdrop-filter: none; /* Sem desfoque na tela inteira */
+    background: rgba(0, 0, 0, 0); /* Totalmente transparente */
+    backdrop-filter: none;
     -webkit-backdrop-filter: none;
     z-index: 1000;
     opacity: 0;
     visibility: hidden;
     transition: opacity 0.2s ease, visibility 0.2s ease;
-    pointer-events: none; /* Permite que os cliques passem para as caixas/elementos abaixo */
+    pointer-events: none; /* Permite cliques nos elementos abaixo */
 }
 
 .modal-overlay.active {
@@ -437,8 +437,8 @@ header p {
 /* Modal Content - Popover near cursor with local semi-transparency and live blur */
 .modal-content {
     position: absolute;
-    background: rgba(15, 23, 42, 0.45); /* Mais transparente */
-    backdrop-filter: blur(10px); /* Live blur confinado apenas a este container */
+    background: rgba(15, 23, 42, 0.6); /* Um pouco menos transparente (era 0.45) */
+    backdrop-filter: blur(10px); /* Live blur confinado ao modal */
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.15); /* Borda glassmorphism */
     border-radius: 14px;

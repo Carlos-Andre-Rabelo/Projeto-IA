@@ -146,21 +146,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 const modalWidth = 280; // Largura do modal configurada no CSS
                 const modalHeight = 150; // Altura aproximada do modal
                 
-                let left = e.clientX + 10;
-                let top = e.clientY + 10;
+                let left = e.pageX + 10;
+                let top = e.pageY + 10;
                 
-                // Evita que o modal passe da borda direita
-                if (left + modalWidth > window.innerWidth) {
-                    left = e.clientX - modalWidth - 10;
+                // Evita que o modal passe da borda direita da viewport (considerando o scroll)
+                if (left + modalWidth > window.innerWidth + window.scrollX) {
+                    left = e.pageX - modalWidth - 10;
                 }
-                // Evita que o modal passe da borda inferior
-                if (top + modalHeight > window.innerHeight) {
-                    top = e.clientY - modalHeight - 10;
+                // Evita que o modal passe da borda inferior da viewport (considerando o scroll)
+                if (top + modalHeight > window.innerHeight + window.scrollY) {
+                    top = e.pageY - modalHeight - 10;
                 }
                 
-                // Garante valores positivos
-                if (left < 10) left = 10;
-                if (top < 10) top = 10;
+                // Garante limites positivos dentro da viewport visível
+                if (left < window.scrollX + 10) left = window.scrollX + 10;
+                if (top < window.scrollY + 10) top = window.scrollY + 10;
                 
                 modalContent.style.left = `${left}px`;
                 modalContent.style.top = `${top}px`;
