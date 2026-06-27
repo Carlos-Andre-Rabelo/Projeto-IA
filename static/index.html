@@ -67,12 +67,37 @@
                 </div>
 
                 <h3>Resultado da IA</h3>
-                <div class="image-wrapper">
+                <div class="image-wrapper" id="image-wrapper">
                     <img id="result-image" src="" alt="Resultado da Detecção">
+                    <div id="bounding-boxes-container"></div>
                 </div>
                 <button class="btn-reset" id="btn-reset">Analisar nova radiografia</button>
             </div>
         </main>
+    </div>
+
+    <!-- Modal for Disease Info -->
+    <div class="modal-overlay" id="info-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalhes da Detecção</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Dente:</span>
+                    <span class="modal-info-value" id="modal-tooth">N/A</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Anomalia/Doença:</span>
+                    <span class="modal-info-value" id="modal-disease">-</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Certeza (Confiança):</span>
+                    <span class="modal-info-value" id="modal-confidence">-</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

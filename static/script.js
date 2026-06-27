@@ -9,8 +9,91 @@ document.addEventListener('DOMContentLoaded', () => {
     const confSlider = document.getElementById('conf-slider');
     const confValue = document.getElementById('conf-value');
     const modelSelect = document.getElementById('model-select');
+    
+    const boundingBoxesContainer = document.getElementById('bounding-boxes-container');
+    const modalOverlay = document.getElementById('info-modal');
+    const modalClose = document.getElementById('modal-close');
+    const modalTooth = document.getElementById('modal-tooth');
+    const modalDisease = document.getElementById('modal-disease');
+    const modalConfidence = document.getElementById('modal-confidence');
 
     let currentFile = null;
+    let currentBoxesData = [];
+    let originalImageWidth = 1;
+    let originalImageHeight = 1;
+
+    // Modal Events
+    modalClose.addEventListener('click', () => {
+        modalOverlay.classList.remove('active');
+    });
+
+    modalOverlay.addEventListener('click', (e) => {
+        if (e.target === modalOverlay) {
+            modalOverlay.classList.remove('active');
+        }
+    });
+
+    // Resize observer for dynamic box scaling
+    const resizeObserver = new ResizeObserver(() => {
+        drawBoxes();
+    });
+    resizeObserver.observe(resultImage);
+
+    function drawBoxes() {
+        boundingBoxesContainer.innerHTML = '';
+        
+        const displayedWidth = resultImage.clientWidth;
+        const displayedHeight = resultImage.clientHeight;
+        
+        if (displayedWidth === 0 || displayedHeight === 0 || currentBoxesData.length === 0) return;
+        
+        const scaleX = displayedWidth / originalImageWidth;
+        const scaleY = displayedHeight / originalImageHeight;
+        
+        currentBoxesData.forEach(box => {
+            const div = document.createElement('div');
+            div.className = 'bounding-box';
+            
+            // Calculate scaled coordinates
+            const x1 = box.x1 * scaleX;
+            const y1 = box.y1 * scaleY;
+            const width = (box.x2 - box.x1) * scaleX;
+            const height = (box.y2 - box.y1) * scaleY;
+            
+            div.style.left = `${x1}px`;
+            div.style.top = `${y1}px`;
+            div.style.width = `${width}px`;
+            div.style.height = `${height}px`;
+            
+            // Set border color based on class
+            if (box.class === 'Impacted') {
+                div.style.borderColor = '#042aff';
+            } else if (box.class === 'Caries') {
+                div.style.borderColor = '#ffaa00';
+            } else if (box.class === 'Periapical Lesion') {
+                div.style.borderColor = '#00aa00';
+            } else {
+                div.style.borderColor = '#ff0000';
+            }
+            
+            // Add click event for modal
+            div.addEventListener('click', () => {
+                modalTooth.innerText = 'N/A'; // Modelo não retorna o dente específico
+                
+                // Traduz o nome da doença para o modal
+                let diseaseName = box.class;
+                if (diseaseName === 'Impacted') diseaseName = 'Dente Impactado';
+                else if (diseaseName === 'Caries') diseaseName = 'Cárie';
+                else if (diseaseName === 'Periapical Lesion') diseaseName = 'Lesão Periapical';
+                
+                modalDisease.innerText = diseaseName;
+                modalConfidence.innerText = Math.round(box.conf * 100) + '%';
+                modalOverlay.classList.add('active');
+            });
+            
+            boundingBoxesContainer.appendChild(div);
+        });
+    }
 
     // Handle click on upload area
     uploadArea.addEventListener('click', () => {
@@ -71,6 +154,8 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadArea.classList.remove('hidden');
         imageInput.value = '';
         currentFile = null;
+        currentBoxesData = [];
+        boundingBoxesContainer.innerHTML = '';
         imageInput.click(); // Abre o seletor de arquivo automaticamente
     });
 
@@ -104,28 +189,30 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                throw new Error('Erro na análise da imagem.');
+                const text = await response.text();
+                throw new Error(text || 'Erro na análise da imagem.');
             }
 
-            // The backend returns an image directly
-            const blob = await response.blob();
-            
-            // Check if backend returned JSON error instead of image
-            if (blob.type === 'application/json') {
-                const text = await blob.text();
-                const json = JSON.parse(text);
-                throw new Error(json.error || 'Erro desconhecido.');
+            const json = await response.json();
+            if (json.error) {
+                throw new Error(json.error);
             }
 
-            // Create object URL for the image
-            const imageUrl = URL.createObjectURL(blob);
-            
-            // Display result
+            // Set the local image as source
+            const imageUrl = URL.createObjectURL(currentFile);
             resultImage.src = imageUrl;
-            resultImage.style.opacity = '1';
             
-            loadingState.classList.add('hidden');
-            resultArea.classList.remove('hidden');
+            // Wait for image to load to get dimensions correct before drawing boxes
+            resultImage.onload = () => {
+                originalImageWidth = json.width;
+                originalImageHeight = json.height;
+                currentBoxesData = json.boxes || [];
+                drawBoxes();
+                
+                resultImage.style.opacity = '1';
+                loadingState.classList.add('hidden');
+                resultArea.classList.remove('hidden');
+            };
 
         } catch (error) {
             console.error('Error:', error);

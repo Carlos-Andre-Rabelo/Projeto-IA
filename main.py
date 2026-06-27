@@ -46,18 +46,33 @@ async def predict(file: UploadFile = File(...), conf: float = Form(0.15), model_
         # conf dinâmico enviado pelo frontend
         results = model.predict(img, conf=conf, augment=True)
         
-        # Pega o primeiro resultado (única imagem enviada) e plota (desenha as bounding boxes e labels)
-        res_plotted = results[0].plot()
-
-        # Converte de volta para imagem usando OpenCV para codificar como JPG
-        is_success, buffer = cv2.imencode(".jpg", res_plotted)
-        if not is_success:
-            return {"error": "Falha ao processar a imagem resultante."}
-            
-        io_buf = BytesIO(buffer)
+        result = results[0]
+        boxes_data = []
+        names = model.names
         
-        # Retorna a imagem em formato binário que o frontend exibirá
-        return Response(content=io_buf.getvalue(), media_type="image/jpeg")
+        if result.boxes:
+            for box in result.boxes:
+                # get box coordinates in (left, top, right, bottom) format
+                x1, y1, x2, y2 = box.xyxy[0].tolist()
+                b_conf = float(box.conf[0])
+                cls = int(box.cls[0])
+                b_name = names[cls]
+                
+                boxes_data.append({
+                    "x1": x1,
+                    "y1": y1,
+                    "x2": x2,
+                    "y2": y2,
+                    "conf": b_conf,
+                    "class": b_name
+                })
+                
+        # Retorna os dados em JSON para o frontend desenhar as caixas
+        return {
+            "boxes": boxes_data,
+            "width": result.orig_shape[1],
+            "height": result.orig_shape[0]
+        }
 
     except Exception as e:
         return {"error": str(e)}
