@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detecção Odontológica Inteligente</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-elements">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <h1>Diagnóstico <span>Odontológico</span></h1>
+            <p>Faça o upload de uma radiografia e nossa IA analisará a presença de anomalias em cada dente instantaneamente.</p>
+        </header>
+
+        <main>
+            <div class="upload-area" id="upload-area">
+                <input type="file" id="image-input" accept="image/*" hidden>
+                <div class="upload-content">
+                    <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <h3>Clique ou arraste uma radiografia aqui</h3>
+                    <p>Formatos suportados: JPG, JPEG, PNG</p>
+                </div>
+            </div>
+
+            <div class="loading-state hidden" id="loading-state">
+                <div class="spinner"></div>
+                <p>Analisando a radiografia usando o modelo YOLO...</p>
+            </div>
+
+            <div class="result-area hidden" id="result-area">
+                <h3>Resultado da IA</h3>
+                <div class="image-wrapper">
+                    <img id="result-image" src="" alt="Resultado da Detecção">
+                </div>
+                <button class="btn-reset" id="btn-reset">Analisar nova radiografia</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
