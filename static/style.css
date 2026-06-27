@@ -161,6 +161,68 @@ header p {
     to { transform: rotate(360deg); }
 }
 
+/* Controls Panel */
+.controls-panel {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.slider-container, .legend-container {
+    flex: 1;
+    min-width: 250px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.slider-container label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+}
+
+.slider-container input[type=range] {
+    width: 100%;
+    margin-bottom: 8px;
+    accent-color: var(--accent);
+}
+
+.slider-container small {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    display: block;
+}
+
+.legend-container h4 {
+    margin-bottom: 10px;
+    font-size: 1.1rem;
+    color: var(--text-main);
+}
+
+.legend-container ul {
+    list-style: none;
+}
+
+.legend-container li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.color-box {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 10px;
+    display: inline-block;
+}
+
 /* Result Area */
 .result-area h3 {
     font-size: 1.5rem;

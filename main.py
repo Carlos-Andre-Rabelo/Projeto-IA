@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import Response
 from ultralytics import YOLO
@@ -22,7 +22,7 @@ except Exception as e:
     model = None
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...)):
+async def predict(file: UploadFile = File(...), conf: float = Form(0.15)):
     if not model:
         return {"error": "Modelo não foi carregado corretamente."}
         
@@ -32,9 +32,9 @@ async def predict(file: UploadFile = File(...)):
         nparr = np.frombuffer(contents, np.uint8)
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-        # Realiza a inferência com TTA (augment=True) e confiança reduzida para capturar mais casos (alta sensibilidade/recall)
-        # conf=0.15 garante que não deixe passar possíveis doenças no modelo Small
-        results = model.predict(img, conf=0.15, augment=True)
+        # Realiza a inferência com TTA (augment=True) e confiança dinâmica
+        # conf dinâmico enviado pelo frontend
+        results = model.predict(img, conf=conf, augment=True)
         
         # Pega o primeiro resultado (única imagem enviada) e plota (desenha as bounding boxes e labels)
         res_plotted = results[0].plot()

@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultImage = document.getElementById('result-image');
     const btnReset = document.getElementById('btn-reset');
 
+    const confSlider = document.getElementById('conf-slider');
+    const confValue = document.getElementById('conf-value');
+
+    let currentFile = null;
+
     // Handle click on upload area
     uploadArea.addEventListener('click', () => {
         imageInput.click();
@@ -26,14 +31,29 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadArea.classList.remove('dragover');
         
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            handleFile(e.dataTransfer.files[0]);
+            currentFile = e.dataTransfer.files[0];
+            handleFile(currentFile);
         }
     });
 
     // Handle file input change
     imageInput.addEventListener('change', (e) => {
         if (e.target.files && e.target.files.length > 0) {
-            handleFile(e.target.files[0]);
+            currentFile = e.target.files[0];
+            handleFile(currentFile);
+        }
+    });
+
+    // Handle slider change (re-run analysis)
+    confSlider.addEventListener('input', (e) => {
+        // Update label text in real-time
+        confValue.innerText = Math.round(e.target.value * 100) + '%';
+    });
+
+    confSlider.addEventListener('change', (e) => {
+        // Re-run the analysis with the new confidence when user releases slider
+        if (currentFile) {
+            handleFile(currentFile, false);
         }
     });
 
@@ -42,10 +62,11 @@ document.addEventListener('DOMContentLoaded', () => {
         resultArea.classList.add('hidden');
         uploadArea.classList.remove('hidden');
         imageInput.value = '';
+        currentFile = null;
         imageInput.click(); // Abre o seletor de arquivo automaticamente
     });
 
-    async function handleFile(file) {
+    async function handleFile(file, showFullLoading = true) {
         // Only accept images
         if (!file.type.startsWith('image/')) {
             alert('Por favor, selecione um arquivo de imagem válido.');
@@ -53,12 +74,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Show loading
-        uploadArea.classList.add('hidden');
+        if (showFullLoading) {
+            uploadArea.classList.add('hidden');
+        } else {
+            // Se for apenas ajuste de slider, esconde apenas a imagem e mostra loading rápido
+            resultImage.style.opacity = '0.3';
+        }
         loadingState.classList.remove('hidden');
 
         // Prepare FormData
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('conf', confSlider.value); // Envia o valor do slider
 
         try {
             // Send to backend
@@ -86,6 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Display result
             resultImage.src = imageUrl;
+            resultImage.style.opacity = '1';
             
             loadingState.classList.add('hidden');
             resultArea.classList.remove('hidden');
@@ -96,7 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Reset UI on error
             loadingState.classList.add('hidden');
+            resultArea.classList.add('hidden');
             uploadArea.classList.remove('hidden');
+            currentFile = null;
         }
     }
 });
