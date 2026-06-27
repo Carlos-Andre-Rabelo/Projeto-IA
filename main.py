@@ -10,8 +10,8 @@ import os
 
 app = FastAPI(title="Dental Radiograph Disease Detection API")
 
-# Caminho para o modelo YOLO treinado
-MODEL_PATH = r"C:\Users\Carlos Rabelo\Downloads\training_data\training_data\quadrant-enumeration-disease\runs\detect\runs\detect\treino_nano_1280\weights\best.pt"
+# Caminho para o modelo YOLO treinado (agora local para o projeto)
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "model", "best.pt")
 
 # Tenta carregar o modelo YOLO
 try:
@@ -33,8 +33,8 @@ async def predict(file: UploadFile = File(...)):
         img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
         # Realiza a inferência com TTA (augment=True) e confiança reduzida para capturar mais casos (alta sensibilidade/recall)
-        # conf=0.20 garante que não deixe passar possíveis doenças
-        results = model.predict(img, conf=0.20, augment=True)
+        # conf=0.15 garante que não deixe passar possíveis doenças no modelo Small
+        results = model.predict(img, conf=0.15, augment=True)
         
         # Pega o primeiro resultado (única imagem enviada) e plota (desenha as bounding boxes e labels)
         res_plotted = results[0].plot()
