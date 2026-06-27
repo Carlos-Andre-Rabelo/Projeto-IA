@@ -131,7 +131,10 @@ Sua tarefa:
 - Não inventar nenhum achado clínico que não esteja na lista fornecida.
 - Não fornecer diagnósticos definitivos (lembre de enfatizar que o parecer definitivo cabe ao cirurgião-dentista).
 - Ser objetivo, técnico, claro e profissional no tom.
-- Estruturar a resposta com seções breves e objetivas em português.
+- Estruturar a resposta com seções breves e objetivas em português
+- Gerar a resposta sem markdown.
+- Não dizer que aquele é um laudo clínico, e sim uma interpretação textual dos achados detectados pelo modelo.
+- Seja impessoal e meramente informativo nas respostas.
 """
 
     try:
