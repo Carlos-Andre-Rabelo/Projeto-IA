@@ -10,21 +10,31 @@ import os
 
 app = FastAPI(title="Dental Radiograph Disease Detection API")
 
-# Caminho para o modelo YOLO treinado (agora local para o projeto)
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "model", "best.pt")
+# Diretório onde os modelos estão armazenados
+MODELS_DIR = os.path.join(os.path.dirname(__file__), "model")
+loaded_models = {}
 
-# Tenta carregar o modelo YOLO
-try:
-    model = YOLO(MODEL_PATH)
-    print(f"Modelo carregado com sucesso de {MODEL_PATH}")
-except Exception as e:
-    print(f"Erro ao carregar o modelo: {e}")
-    model = None
+def get_model(model_name: str):
+    if model_name not in loaded_models:
+        model_path = os.path.join(MODELS_DIR, model_name)
+        if not os.path.exists(model_path):
+            return None
+        try:
+            loaded_models[model_name] = YOLO(model_path)
+            print(f"Modelo {model_name} carregado com sucesso de {model_path}")
+        except Exception as e:
+            print(f"Erro ao carregar o modelo {model_name}: {e}")
+            return None
+    return loaded_models[model_name]
+
+# Pré-carrega o modelo padrão
+get_model("best.pt")
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...), conf: float = Form(0.15)):
+async def predict(file: UploadFile = File(...), conf: float = Form(0.15), model_name: str = Form("best.pt")):
+    model = get_model(model_name)
     if not model:
-        return {"error": "Modelo não foi carregado corretamente."}
+        return {"error": f"Modelo '{model_name}' não foi carregado corretamente ou não existe."}
         
     try:
         # Lê a imagem enviada

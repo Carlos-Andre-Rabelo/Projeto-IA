@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const confSlider = document.getElementById('conf-slider');
     const confValue = document.getElementById('conf-value');
+    const modelSelect = document.getElementById('model-select');
 
     let currentFile = null;
 
@@ -57,6 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    modelSelect.addEventListener('change', (e) => {
+        // Re-run the analysis when user changes the model
+        if (currentFile) {
+            handleFile(currentFile, false);
+        }
+    });
+
     // Reset button
     btnReset.addEventListener('click', () => {
         resultArea.classList.add('hidden');
@@ -86,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('conf', confSlider.value); // Envia o valor do slider
+        formData.append('model_name', modelSelect.value); // Envia o modelo selecionado
 
         try {
             // Send to backend
