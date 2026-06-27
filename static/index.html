@@ -42,46 +42,61 @@
 
             <div class="result-area hidden" id="result-area">
                 <div class="controls-panel">
-                    <div class="model-select-container" style="margin-bottom: 15px;">
-                        <label for="model-select" style="font-weight: 600; display: block; margin-bottom: 5px;">Modelo de IA:</label>
-                        <select id="model-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #ccc; font-family: 'Outfit', sans-serif;">
+                    <div class="control-box">
+                        <label for="model-select">Modelo de IA:</label>
+                        <select id="model-select">
                             <option value="best.pt">best.pt (Original)</option>
                             <option value="treino_small_1280_tuned-5.pt" selected>treino_small_1280_tuned-5 (Melhor Resultado)</option>
                             <option value="train-5.pt">train-5</option>
                             <option value="train_clinical-2.pt">train_clinical-2</option>
                         </select>
                     </div>
-                    <div class="slider-container">
+                    <div class="control-box">
                         <label for="conf-slider">Confiança Mínima: <span id="conf-value">15%</span></label>
                         <input type="range" id="conf-slider" min="0.01" max="0.99" step="0.01" value="0.15">
                         <small>Deslize para a esquerda para aumentar a sensibilidade (mostrar mais casos).</small>
                     </div>
-                    <div class="legend-container">
-                        <h4>Legenda de Detecção</h4>
-                        <ul>
-                            <li><span class="color-box" style="background-color: #042aff;"></span> Dente Impactado</li>
-                            <li><span class="color-box" style="background-color: #ffaa00;"></span> Cárie</li>
-                            <li><span class="color-box" style="background-color: #00aa00;"></span> Lesão Periapical</li>
-                        </ul>
-                    </div>
                 </div>
 
                 <h3>Resultado da IA</h3>
-                <div class="image-wrapper" id="image-wrapper">
-                    <button class="toggle-boxes-btn" id="toggle-boxes-btn" title="Mostrar/Esconder detecções">
-                        <svg class="eye-icon open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                            <circle cx="12" cy="12" r="3"></circle>
-                        </svg>
-                        <svg class="eye-icon closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
-                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                        </svg>
-                    </button>
-                    <img id="result-image" src="" alt="Resultado da Detecção">
-                    <div id="bounding-boxes-container"></div>
+                <div class="result-main-layout">
+                    <div class="image-wrapper" id="image-wrapper">
+                        <button class="toggle-boxes-btn" id="toggle-boxes-btn" title="Mostrar/Esconder detecções">
+                            <svg class="eye-icon open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            <svg class="eye-icon closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                        <img id="result-image" src="" alt="Resultado da Detecção">
+                        <div id="bounding-boxes-container"></div>
+                    </div>
+                    
+                    <div class="result-sidebar">
+                        <div class="legend-container">
+                            <h4>Legenda de Detecção</h4>
+                            <p class="legend-subtitle">Clique para filtrar as marcações:</p>
+                            <ul id="legend-list">
+                                <li class="legend-item active" data-class="Impacted">
+                                    <span class="color-box" style="background-color: #042aff;"></span>
+                                    <span class="legend-text">Dente Impactado</span>
+                                </li>
+                                <li class="legend-item active" data-class="Caries">
+                                    <span class="color-box" style="background-color: #ffaa00;"></span>
+                                    <span class="legend-text">Cárie</span>
+                                </li>
+                                <li class="legend-item active" data-class="Periapical Lesion">
+                                    <span class="color-box" style="background-color: #00aa00;"></span>
+                                    <span class="legend-text">Lesão Periapical</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <button class="btn-reset" id="btn-reset">Analisar nova radiografia</button>
+                    </div>
                 </div>
-                <button class="btn-reset" id="btn-reset">Analisar nova radiografia</button>
             </div>
         </main>
     </div>

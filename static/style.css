@@ -69,7 +69,7 @@ body {
     position: relative;
     z-index: 1;
     width: 100%;
-    max-width: 800px;
+    max-width: 1150px; /* Aumentado de 800px */
     background: var(--glass-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -170,7 +170,7 @@ header p {
     text-align: left;
 }
 
-.slider-container, .legend-container {
+.control-box {
     flex: 1;
     min-width: 250px;
     background: rgba(255, 255, 255, 0.03);
@@ -179,40 +179,41 @@ header p {
     border-radius: 12px;
 }
 
-.slider-container label {
+.control-box label {
     display: block;
     font-weight: 600;
     margin-bottom: 10px;
     font-size: 1.1rem;
 }
 
-.slider-container input[type=range] {
+.control-box input[type=range] {
     width: 100%;
     margin-bottom: 8px;
     accent-color: var(--accent);
 }
 
-.slider-container small {
+.control-box small {
     color: var(--text-muted);
     font-size: 0.8rem;
     display: block;
 }
 
-.legend-container h4 {
-    margin-bottom: 10px;
-    font-size: 1.1rem;
+.control-box select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid var(--glass-border);
+    background: rgba(15, 23, 42, 0.6);
     color: var(--text-main);
-}
-
-.legend-container ul {
-    list-style: none;
-}
-
-.legend-container li {
-    display: flex;
-    align-items: center;
-    margin-bottom: 6px;
+    font-family: inherit;
     font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.25s ease;
+    cursor: pointer;
+}
+
+.control-box select:focus {
+    border-color: var(--accent);
 }
 
 .color-box {
@@ -221,6 +222,7 @@ header p {
     border-radius: 4px;
     margin-right: 10px;
     display: inline-block;
+    flex-shrink: 0;
 }
 
 /* Result Area */
@@ -229,12 +231,19 @@ header p {
     margin-bottom: 20px;
 }
 
+.result-main-layout {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 24px;
+    align-items: stretch;
+    text-align: left;
+}
+
 .image-wrapper {
-    width: 100%;
+    flex: 3; /* Aumentado para dar mais espaço à imagem (era 2) */
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    margin-bottom: 24px;
     border: 1px solid var(--glass-border);
     background: rgba(0,0,0,0.2);
 }
@@ -243,6 +252,72 @@ header p {
     width: 100%;
     height: auto;
     display: block;
+}
+
+.result-sidebar {
+    flex: 1; /* Ocupa o espaço restante de forma mais fina */
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.legend-container {
+    flex-grow: 1; /* Estica para preencher a altura da coluna */
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.legend-container h4 {
+    margin-bottom: 8px;
+    font-size: 1.15rem;
+    color: var(--text-main);
+}
+
+.legend-subtitle {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+}
+
+.legend-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.legend-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+    transform: translateX(2px);
+}
+
+.legend-item.active {
+    opacity: 1;
+}
+
+.legend-item:not(.active) {
+    opacity: 0.35;
+    text-decoration: line-through;
+    text-decoration-color: rgba(255, 255, 255, 0.4);
+    background: transparent;
+    border-color: transparent;
 }
 
 .btn-reset {
@@ -256,6 +331,7 @@ header p {
     cursor: pointer;
     transition: all 0.3s ease;
     font-family: inherit;
+    width: 100%; /* Estica para ocupar a largura da barra lateral */
 }
 
 .btn-reset:hover {
@@ -269,7 +345,19 @@ header p {
 }
 
 /* Responsividade Mobile */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+    .result-main-layout {
+        flex-direction: column;
+    }
+    
+    .result-sidebar {
+        width: 100%;
+    }
+    
+    .legend-container {
+        width: 100%;
+    }
+    
     .container {
         padding: 24px 16px;
         margin: 10px;

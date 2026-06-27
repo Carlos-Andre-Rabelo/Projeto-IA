@@ -60,6 +60,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Filtro interativo na legenda
+    const legendItems = document.querySelectorAll('.legend-item');
+    legendItems.forEach(item => {
+        item.addEventListener('click', () => {
+            const wasActive = item.classList.contains('active');
+            item.classList.toggle('active');
+            
+            // Se desativou o filtro e esta classe estiver com o modal aberto, fecha o modal
+            if (wasActive) {
+                const selectedBox = document.querySelector('.bounding-box.selected');
+                if (selectedBox && selectedBox.dataset.class === item.dataset.class) {
+                    closeModal();
+                }
+            }
+            
+            drawBoxes();
+        });
+    });
+
     // Resize observer for dynamic box scaling
     const resizeObserver = new ResizeObserver(() => {
         drawBoxes();
@@ -74,12 +93,20 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (displayedWidth === 0 || displayedHeight === 0 || currentBoxesData.length === 0) return;
         
+        // Obtém as classes que estão marcadas como ativas na legenda
+        const activeLegendItems = document.querySelectorAll('.legend-item.active');
+        const activeClasses = Array.from(activeLegendItems).map(item => item.dataset.class);
+        
         const scaleX = displayedWidth / originalImageWidth;
         const scaleY = displayedHeight / originalImageHeight;
         
         currentBoxesData.forEach(box => {
+            // Ignora se a classe da detecção não estiver ativa nos filtros da legenda
+            if (!activeClasses.includes(box.class)) return;
+            
             const div = document.createElement('div');
             div.className = 'bounding-box';
+            div.dataset.class = box.class; // Armazena a classe na div para controle do modal
             
             // Calculate scaled coordinates
             const x1 = box.x1 * scaleX;
@@ -239,6 +266,11 @@ document.addEventListener('DOMContentLoaded', () => {
         boundingBoxesContainer.classList.remove('hidden-boxes');
         toggleBoxesBtn.querySelector('.eye-icon.open').style.display = 'block';
         toggleBoxesBtn.querySelector('.eye-icon.closed').style.display = 'none';
+        
+        // Reseta os filtros da legenda
+        document.querySelectorAll('.legend-item').forEach(item => {
+            item.classList.add('active');
+        });
         
         imageInput.click(); // Abre o seletor de arquivo automaticamente
     });
