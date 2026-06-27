@@ -12,6 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const boundingBoxesContainer = document.getElementById('bounding-boxes-container');
     const toggleBoxesBtn = document.getElementById('toggle-boxes-btn');
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    const imageWrapper = document.getElementById('image-wrapper');
     const modalOverlay = document.getElementById('info-modal');
     const modalClose = document.getElementById('modal-close');
     const modalDisease = document.getElementById('modal-disease');
@@ -60,6 +62,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function toggleFullscreen() {
+        const isFullscreen = imageWrapper.classList.contains('fullscreen-active');
+        if (!isFullscreen) {
+            // Salva a posição original usando um elemento de marcação temporária
+            const parent = imageWrapper.parentNode;
+            const placeholder = document.createElement('div');
+            placeholder.id = 'image-wrapper-placeholder';
+            parent.insertBefore(placeholder, imageWrapper);
+            
+            // Move o wrapper da imagem diretamente para o body para ignorar restrições de backdrop-filter
+            document.body.appendChild(imageWrapper);
+            imageWrapper.classList.add('fullscreen-active');
+            
+            fullscreenBtn.querySelector('.fullscreen-icon.enter').style.display = 'none';
+            fullscreenBtn.querySelector('.fullscreen-icon.exit').style.display = 'block';
+        } else {
+            exitFullscreen();
+        }
+        drawBoxes();
+    }
+
+    function exitFullscreen() {
+        if (imageWrapper.classList.contains('fullscreen-active')) {
+            const placeholder = document.getElementById('image-wrapper-placeholder');
+            if (placeholder) {
+                // Devolve o wrapper da imagem ao seu lugar original no layout
+                placeholder.parentNode.insertBefore(imageWrapper, placeholder);
+                placeholder.remove();
+            }
+            imageWrapper.classList.remove('fullscreen-active');
+            
+            fullscreenBtn.querySelector('.fullscreen-icon.enter').style.display = 'block';
+            fullscreenBtn.querySelector('.fullscreen-icon.exit').style.display = 'none';
+            drawBoxes();
+        }
+    }
+
+    // Alternar Tela Cheia (Fullscreen)
+    fullscreenBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFullscreen();
+    });
+
+    // Pressionar ESC para fechar tela cheia
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            exitFullscreen();
+        }
+    });
+
     // Filtro interativo na legenda
     const legendItems = document.querySelectorAll('.legend-item');
     legendItems.forEach(item => {
@@ -92,6 +144,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const displayedHeight = resultImage.clientHeight;
         
         if (displayedWidth === 0 || displayedHeight === 0 || currentBoxesData.length === 0) return;
+        
+        // Alinha e redimensiona o container de bounding boxes de acordo com a imagem real
+        boundingBoxesContainer.style.left = `${resultImage.offsetLeft}px`;
+        boundingBoxesContainer.style.top = `${resultImage.offsetTop}px`;
+        boundingBoxesContainer.style.width = `${displayedWidth}px`;
+        boundingBoxesContainer.style.height = `${displayedHeight}px`;
         
         // Obtém as classes que estão marcadas como ativas na legenda
         const activeLegendItems = document.querySelectorAll('.legend-item.active');
@@ -254,6 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset button
     btnReset.addEventListener('click', () => {
+        exitFullscreen();
         closeModal();
         resultArea.classList.add('hidden');
         uploadArea.classList.remove('hidden');

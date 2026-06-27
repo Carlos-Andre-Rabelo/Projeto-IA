@@ -340,6 +340,26 @@ header p {
     box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.3);
 }
 
+.btn-export {
+    background: #10b981;
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
+    width: 100%;
+}
+
+.btn-export:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);
+}
+
 .hidden {
     display: none !important;
 }
@@ -385,7 +405,8 @@ header p {
         font-size: 1.1rem;
     }
     
-    .btn-reset {
+    .btn-reset,
+    .btn-export {
         width: 100%;
         padding: 14px 20px;
     }
@@ -406,6 +427,11 @@ header p {
 }
 
 /* Bounding Boxes */
+#bounding-boxes-container {
+    position: absolute;
+    pointer-events: none;
+}
+
 .bounding-box {
     position: absolute;
     border: 2px solid;
@@ -414,6 +440,7 @@ header p {
     transition: all 0.2s ease;
     border-radius: 4px;
     z-index: 10;
+    pointer-events: auto; /* Garante que as caixas delimitadoras recebam eventos de mouse */
 }
 
 .bounding-box:hover {
@@ -456,12 +483,20 @@ header p {
     display: none !important;
 }
 
-/* Toggle Boxes Button (Eye Icon) */
-.toggle-boxes-btn {
+/* Image Controls Column */
+.image-controls-column {
     position: absolute;
     top: 15px;
     right: 15px;
     z-index: 25;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Toggle Boxes Button and Fullscreen Button Style */
+.toggle-boxes-btn,
+.fullscreen-btn {
     background: rgba(15, 23, 42, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 50%;
@@ -478,7 +513,8 @@ header p {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-.toggle-boxes-btn:hover {
+.toggle-boxes-btn:hover,
+.fullscreen-btn:hover {
     background: rgba(56, 189, 248, 0.2);
     color: var(--accent);
     border-color: var(--accent);
@@ -486,19 +522,50 @@ header p {
     box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-.toggle-boxes-btn:active {
+.toggle-boxes-btn:active,
+.fullscreen-btn:active {
     transform: scale(0.95);
 }
 
-.toggle-boxes-btn svg {
+.toggle-boxes-btn svg,
+.fullscreen-btn svg {
     width: 22px;
     height: 22px;
     transition: transform 0.3s ease;
 }
 
-.toggle-boxes-btn:hover svg {
+.toggle-boxes-btn:hover svg,
+.fullscreen-btn:hover svg {
     transform: scale(1.05);
 }
+
+/* Fullscreen mode for Image Wrapper */
+.image-wrapper.fullscreen-active {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 990 !important;
+    background: rgba(10, 15, 30, 0.98) !important;
+    border-radius: 0 !important;
+    border: none !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.image-wrapper.fullscreen-active img {
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
+}
+
 
 /* Modal Overlay - absolute positioning to scroll with the page */
 .modal-overlay {
