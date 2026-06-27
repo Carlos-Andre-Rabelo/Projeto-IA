@@ -104,8 +104,17 @@
                                 </li>
                             </ul>
                         </div>
+
                         <button class="btn-export" id="btn-export" type="button">Exportar análise</button>
                         <button class="btn-reset" id="btn-reset">Analisar nova radiografia</button>
+                    </div>
+                </div>
+
+                <div class="legend-container" id="summary-container" style="margin-top: 24px;">
+                    <h4>Resumo Clínico (IA Gemini)</h4>
+                    <p class="legend-subtitle" id="summary-status">Laudo automático dos achados:</p>
+                    <div id="summary" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; white-space: pre-wrap; max-height: 300px; overflow-y: auto; text-align: left; background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.04); padding: 16px; border-radius: 8px;">
+                        Aguardando análise da radiografia...
                     </div>
                 </div>
             </div>

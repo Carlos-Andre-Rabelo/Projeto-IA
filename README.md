@@ -23,7 +23,15 @@ Abra o seu terminal (Prompt de Comando ou PowerShell), navegue até a pasta dest
 pip install -r requirements.txt
 ```
 
-### 3. Rodando o servidor
+### 3. Configuração das Variáveis de Ambiente
+O projeto agora integra a API do Gemini para gerar laudos clínicos automatizados baseados nas detecções da IA.
+1. Crie um arquivo chamado `.env` na raiz do projeto.
+2. Adicione a sua chave de API do Google AI Studio nele, conforme o modelo do arquivo `.env.example`:
+   ```env
+   GEMINI_API_KEY=SUA_CHAVE_AQUI
+   ```
+
+### 4. Rodando o servidor
 Ainda no terminal, execute o servidor FastAPI usando o pacote Uvicorn:
 
 ```bash
@@ -31,7 +39,7 @@ python -m uvicorn main:app --reload
 ```
 *Nota: A flag `--reload` faz o servidor reiniciar sozinho caso você modifique algum arquivo do código.*
 
-### 4. Acessando a Interface Web
+### 5. Acessando a Interface Web
 Assim que o servidor carregar e exibir a mensagem "Application startup complete", abra o seu navegador favorito e acesse:
 
 👉 **[http://localhost:8000](http://localhost:8000)**

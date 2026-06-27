@@ -321,6 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
         currentBoxesData = [];
         boundingBoxesContainer.innerHTML = '';
         
+        // Reseta o texto do resumo Gemini
+        const summaryDiv = document.getElementById('summary');
+        if (summaryDiv) {
+            summaryDiv.innerText = 'Aguardando análise da radiografia...';
+        }
+
         // Reseta o estado de visibilidade do olho e das caixas
         boundingBoxesContainer.classList.remove('hidden-boxes');
         toggleBoxesBtn.querySelector('.eye-icon.open').style.display = 'block';
@@ -387,6 +393,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 resultImage.style.opacity = '1';
                 loadingState.classList.add('hidden');
                 resultArea.classList.remove('hidden');
+
+                // Dispara a geração de resumo clínico com o Gemini de forma assíncrona
+                gerarResumo(currentBoxesData);
             };
 
         } catch (error) {
@@ -398,6 +407,43 @@ document.addEventListener('DOMContentLoaded', () => {
             resultArea.classList.add('hidden');
             uploadArea.classList.remove('hidden');
             currentFile = null;
+        }
+    }
+
+    async function gerarResumo(boxes) {
+        const summaryDiv = document.getElementById('summary');
+        const summaryStatus = document.getElementById('summary-status');
+        
+        if (!summaryDiv) return;
+
+        summaryStatus.innerText = "Laudo automático dos achados:";
+        summaryDiv.innerHTML = '<span style="color: var(--text-muted); font-style: italic;">Gerando parecer clínico com IA Gemini...</span>';
+
+        try {
+            const response = await fetch('/summarize', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(boxes)
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(text || 'Erro ao gerar o resumo.');
+            }
+
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            // Exibe o resumo clínico retornado pelo Gemini
+            summaryDiv.innerText = data.summary || "Nenhum resumo disponível.";
+        } catch (error) {
+            console.error('Erro no resumo Gemini:', error);
+            summaryDiv.innerHTML = `<span style="color: #ff6b6b;">Erro ao obter resumo da IA: ${error.message}</span>`;
         }
     }
 });
