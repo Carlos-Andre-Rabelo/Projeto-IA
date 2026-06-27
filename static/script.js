@@ -11,9 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modelSelect = document.getElementById('model-select');
     
     const boundingBoxesContainer = document.getElementById('bounding-boxes-container');
+    const toggleBoxesBtn = document.getElementById('toggle-boxes-btn');
     const modalOverlay = document.getElementById('info-modal');
     const modalClose = document.getElementById('modal-close');
-    const modalTooth = document.getElementById('modal-tooth');
     const modalDisease = document.getElementById('modal-disease');
     const modalConfidence = document.getElementById('modal-confidence');
 
@@ -22,14 +22,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let originalImageWidth = 1;
     let originalImageHeight = 1;
 
-    // Modal Events
-    modalClose.addEventListener('click', () => {
+    function closeModal() {
         modalOverlay.classList.remove('active');
+        document.querySelectorAll('.bounding-box.selected').forEach(el => el.classList.remove('selected'));
+    }
+
+    // Modal Events
+    modalClose.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeModal();
     });
 
-    modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) {
-            modalOverlay.classList.remove('active');
+    // Fecha o modal ao clicar fora (no documento geral)
+    document.addEventListener('click', (e) => {
+        if (modalOverlay.classList.contains('active')) {
+            const isClickInsideModal = modalOverlay.querySelector('.modal-content').contains(e.target);
+            const isClickOnBox = e.target.classList.contains('bounding-box') || e.target.closest('.bounding-box');
+            
+            if (!isClickInsideModal && !isClickOnBox) {
+                closeModal();
+            }
+        }
+    });
+
+    // Toggle Bounding Boxes Visibility (Eye Icon)
+    toggleBoxesBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isHidden = boundingBoxesContainer.classList.toggle('hidden-boxes');
+        const eyeOpen = toggleBoxesBtn.querySelector('.eye-icon.open');
+        const eyeClosed = toggleBoxesBtn.querySelector('.eye-icon.closed');
+        if (isHidden) {
+            eyeOpen.style.display = 'none';
+            eyeClosed.style.display = 'block';
+        } else {
+            eyeOpen.style.display = 'block';
+            eyeClosed.style.display = 'none';
         }
     });
 
@@ -66,28 +93,78 @@ document.addEventListener('DOMContentLoaded', () => {
             div.style.height = `${height}px`;
             
             // Set border color based on class
+            let color = '#ff0000';
             if (box.class === 'Impacted') {
-                div.style.borderColor = '#042aff';
+                color = '#042aff';
             } else if (box.class === 'Caries') {
-                div.style.borderColor = '#ffaa00';
+                color = '#ffaa00';
             } else if (box.class === 'Periapical Lesion') {
-                div.style.borderColor = '#00aa00';
-            } else {
-                div.style.borderColor = '#ff0000';
+                color = '#00aa00';
             }
+            div.style.borderColor = color;
             
-            // Add click event for modal
-            div.addEventListener('click', () => {
-                modalTooth.innerText = 'N/A'; // Modelo não retorna o dente específico
+            // Traduz o nome da doença
+            let diseaseName = box.class;
+            if (diseaseName === 'Impacted') diseaseName = 'Dente Impactado';
+            else if (diseaseName === 'Caries') diseaseName = 'Cárie';
+            else if (diseaseName === 'Periapical Lesion') diseaseName = 'Lesão Periapical';
+            
+            const confidencePercent = Math.round(box.conf * 100) + '%';
+            
+            // Legenda acima ou abaixo da box
+            const labelSpan = document.createElement('span');
+            labelSpan.className = 'bounding-box-label';
+            labelSpan.innerText = `${diseaseName} (${confidencePercent})`;
+            labelSpan.style.backgroundColor = color;
+            
+            // Se estiver muito próximo ao topo da imagem, exibe abaixo da box
+            if (y1 < 22) {
+                labelSpan.style.top = '100%';
+                labelSpan.style.bottom = 'auto';
+                labelSpan.style.borderRadius = '0 0 4px 4px';
+            } else {
+                labelSpan.style.bottom = '100%';
+                labelSpan.style.top = 'auto';
+                labelSpan.style.borderRadius = '4px 4px 0 0';
+            }
+            div.appendChild(labelSpan);
+            
+            // Add click event for modal (positioned relative to mouse click)
+            div.addEventListener('click', (e) => {
+                e.stopPropagation();
                 
-                // Traduz o nome da doença para o modal
-                let diseaseName = box.class;
-                if (diseaseName === 'Impacted') diseaseName = 'Dente Impactado';
-                else if (diseaseName === 'Caries') diseaseName = 'Cárie';
-                else if (diseaseName === 'Periapical Lesion') diseaseName = 'Lesão Periapical';
+                // Desmarca qualquer outra caixa previamente selecionada
+                document.querySelectorAll('.bounding-box.selected').forEach(el => el.classList.remove('selected'));
+                
+                // Marca a caixa atual como selecionada
+                div.classList.add('selected');
                 
                 modalDisease.innerText = diseaseName;
-                modalConfidence.innerText = Math.round(box.conf * 100) + '%';
+                modalConfidence.innerText = confidencePercent;
+                
+                const modalContent = modalOverlay.querySelector('.modal-content');
+                const modalWidth = 280; // Largura do modal configurada no CSS
+                const modalHeight = 150; // Altura aproximada do modal
+                
+                let left = e.clientX + 10;
+                let top = e.clientY + 10;
+                
+                // Evita que o modal passe da borda direita
+                if (left + modalWidth > window.innerWidth) {
+                    left = e.clientX - modalWidth - 10;
+                }
+                // Evita que o modal passe da borda inferior
+                if (top + modalHeight > window.innerHeight) {
+                    top = e.clientY - modalHeight - 10;
+                }
+                
+                // Garante valores positivos
+                if (left < 10) left = 10;
+                if (top < 10) top = 10;
+                
+                modalContent.style.left = `${left}px`;
+                modalContent.style.top = `${top}px`;
+                
                 modalOverlay.classList.add('active');
             });
             
@@ -150,12 +227,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Reset button
     btnReset.addEventListener('click', () => {
+        closeModal();
         resultArea.classList.add('hidden');
         uploadArea.classList.remove('hidden');
         imageInput.value = '';
         currentFile = null;
         currentBoxesData = [];
         boundingBoxesContainer.innerHTML = '';
+        
+        // Reseta o estado de visibilidade do olho e das caixas
+        boundingBoxesContainer.classList.remove('hidden-boxes');
+        toggleBoxesBtn.querySelector('.eye-icon.open').style.display = 'block';
+        toggleBoxesBtn.querySelector('.eye-icon.closed').style.display = 'none';
+        
         imageInput.click(); // Abre o seletor de arquivo automaticamente
     });
 

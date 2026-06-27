@@ -329,29 +329,104 @@ header p {
 }
 
 .bounding-box:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.15);
     border-width: 3px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-    z-index: 11;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    z-index: 15;
 }
 
-/* Modal Overlay - Live Blur */
+/* Bounding Box Selected state (glowing white) */
+.bounding-box.selected {
+    border-color: #ffffff !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8), inset 0 0 8px rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.1);
+    z-index: 18;
+}
+
+.bounding-box.selected .bounding-box-label {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Bounding Box Labels */
+.bounding-box-label {
+    position: absolute;
+    color: #ffffff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 16;
+}
+
+/* Hidden state for boxes container */
+#bounding-boxes-container.hidden-boxes .bounding-box {
+    display: none !important;
+}
+
+/* Toggle Boxes Button (Eye Icon) */
+.toggle-boxes-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 25;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50%;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.toggle-boxes-btn:hover {
+    background: rgba(56, 189, 248, 0.2);
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: scale(1.08) translateY(-1px);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-boxes-btn:active {
+    transform: scale(0.95);
+}
+
+.toggle-boxes-btn svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.3s ease;
+}
+
+.toggle-boxes-btn:hover svg {
+    transform: scale(1.05);
+}
+
+/* Modal Overlay - non-fullscreen content but fullscreen overlay to intercept clicks */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(15, 23, 42, 0.4);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0); /* Totalmente transparente, sem escurecimento geral */
+    backdrop-filter: none; /* Sem desfoque na tela inteira */
+    -webkit-backdrop-filter: none;
     z-index: 1000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    pointer-events: none; /* Permite que os cliques passem para as caixas/elementos abaixo */
 }
 
 .modal-overlay.active {
@@ -359,35 +434,40 @@ header p {
     visibility: visible;
 }
 
-/* Modal Content */
+/* Modal Content - Popover near cursor with local semi-transparency and live blur */
 .modal-content {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 30px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    transform: translateY(20px);
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    position: absolute;
+    background: rgba(15, 23, 42, 0.45); /* Mais transparente */
+    backdrop-filter: blur(10px); /* Live blur confinado apenas a este container */
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Borda glassmorphism */
+    border-radius: 14px;
+    padding: 16px;
+    width: 280px;
+    text-align: left;
+    transform: scale(0.9) translateY(5px);
+    transform-origin: top left;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    pointer-events: auto;
 }
 
 .modal-overlay.active .modal-content {
-    transform: translateY(0);
+    transform: scale(1) translateY(0);
 }
 
 .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid var(--glass-border);
-    padding-bottom: 10px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 6px;
 }
 
 .modal-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.05rem;
+    font-weight: 600;
     color: var(--text-main);
     margin: 0;
 }
@@ -396,9 +476,10 @@ header p {
     background: none;
     border: none;
     color: var(--text-muted);
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     cursor: pointer;
     transition: color 0.2s ease;
+    line-height: 1;
 }
 
 .modal-close:hover {
@@ -408,26 +489,26 @@ header p {
 .modal-body {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    text-align: left;
+    gap: 8px;
 }
 
 .modal-info-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 6px;
 }
 
 .modal-info-label {
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 0.8rem;
     color: var(--text-muted);
 }
 
 .modal-info-value {
-    font-weight: 800;
+    font-weight: 700;
     color: var(--text-main);
-    font-size: 1.1rem;
+    font-size: 0.9rem;
 }
