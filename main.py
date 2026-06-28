@@ -237,6 +237,7 @@ Sua tarefa:
 - Gerar a resposta sem markdown.
 - Não dizer que aquele é um laudo clínico, e sim uma interpretação textual dos achados detectados pelo modelo.
 - Seja impessoal e meramente informativo nas respostas.
+- Não diga com certeza que você detectou algo como em "presença de cárie detectada", e sim diga que há suspeita como em "suspeita de cárie".
 """
 
     try:
