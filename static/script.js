@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOverlay = document.getElementById('info-modal');
     const modalClose = document.getElementById('modal-close');
     const modalDisease = document.getElementById('modal-disease');
+    const modalTooth = document.getElementById('modal-tooth');
     const modalConfidence = document.getElementById('modal-confidence');
 
     let currentFile = null;
@@ -196,10 +197,18 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const confidencePercent = Math.round(box.conf * 100) + '%';
             
+            let labelText = `${diseaseName} (${confidencePercent})`;
+            if (box.tooth && box.tooth !== 'Não identificado') {
+                const fdiMatch = box.tooth.match(/Dente (\d+)/);
+                if (fdiMatch) {
+                    labelText = `${diseaseName} [${fdiMatch[1]}] (${confidencePercent})`;
+                }
+            }
+            
             // Legenda acima ou abaixo da box
             const labelSpan = document.createElement('span');
             labelSpan.className = 'bounding-box-label';
-            labelSpan.innerText = `${diseaseName} (${confidencePercent})`;
+            labelSpan.innerText = labelText;
             labelSpan.style.backgroundColor = color;
             
             // Se estiver muito próximo ao topo da imagem, exibe abaixo da box
@@ -225,11 +234,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 div.classList.add('selected');
                 
                 modalDisease.innerText = diseaseName;
+                modalTooth.innerText = box.tooth || 'Não identificado';
                 modalConfidence.innerText = confidencePercent;
                 
                 const modalContent = modalOverlay.querySelector('.modal-content');
                 const modalWidth = 280; // Largura do modal configurada no CSS
-                const modalHeight = 150; // Altura aproximada do modal
+                const modalHeight = 180; // Altura aproximada do modal
                 
                 let left = e.pageX + 10;
                 let top = e.pageY + 10;
