@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultArea = document.getElementById('result-area');
     const resultImage = document.getElementById('result-image');
     const btnReset = document.getElementById('btn-reset');
+    const btnExport = document.getElementById('btn-export');
 
     const confSlider = document.getElementById('conf-slider');
     const confValue = document.getElementById('conf-value');
@@ -24,6 +25,107 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentBoxesData = [];
     let originalImageWidth = 1;
     let originalImageHeight = 1;
+
+//funcao exportar analise csv
+function translateProblem(className) {
+    const key = String(className || "").toLowerCase();
+    const map = {
+        "caries": "Cárie",
+        "impacted": "Dente impactado",
+        "periapical lesion": "Lesão periapical"
+    };
+    return map[key] || className || "Desconhecido";
+}
+
+function extractToothNumber(toothText) {
+    if (!toothText)
+        return "Não identificado";
+    const text = String(toothText);
+    const match = text.match(/\b(\d{2})\b/);
+    return match ? match[1] : text;
+}
+
+function escapeCsvValue(value) {
+    const str = String(value ?? "");
+    return `"${str.replace(/"/g,'""')}"`;
+}
+
+function buildCsvFromBoxes(boxes){
+    const header = [
+        "nº do dente",
+        "problema encontrado",
+        "% de confiança"
+    ];
+    const rows = boxes.map(box => {
+        const toothNumber =
+            extractToothNumber(box.tooth);
+        const problem =
+            translateProblem(
+                box.class || box.class_name
+            );
+        const confidence =
+            `${(box.conf*100).toFixed(1)}%`;
+        return [
+            toothNumber,
+            problem,
+            confidence
+        ];
+    });
+
+    const allRows = [header,...rows];
+    return "\uFEFF" + allRows
+        .map(row =>
+            row
+            .map(escapeCsvValue)
+            .join(";")
+        )
+        .join("\r\n");
+}
+
+function downloadCsv(filename,csvContent){
+    const blob = new Blob(
+        [csvContent],
+        {
+            type:"text/csv;charset=utf-8;"
+        }
+    );
+
+    const url =
+        URL.createObjectURL(blob);
+    const link =
+        document.createElement("a");
+    link.href=url;
+    link.download=filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+}
+
+function exportResultsToCsv(){
+    if(
+        !currentBoxesData ||
+        currentBoxesData.length===0
+    ){
+        alert(
+            "Nenhum resultado disponível."
+        );
+        return;
+    }
+    const csv =
+        buildCsvFromBoxes(
+            currentBoxesData
+        );
+    const date =
+        new Date()
+        .toISOString()
+        .slice(0,10);
+    downloadCsv(
+        `analise_${date}.csv`,
+        csv
+    );
+}
 
     function closeModal() {
         modalOverlay.classList.remove('active');
@@ -358,6 +460,14 @@ document.addEventListener('DOMContentLoaded', () => {
         
         imageInput.click(); // Abre o seletor de arquivo automaticamente
     });
+
+    //exportar analise csv
+    if (btnExport) {
+        btnExport.addEventListener('click', () => {
+            exportResultsToCsv();
+        });
+
+    }
 
     async function handleFile(file, showFullLoading = true) {
         // Only accept images
