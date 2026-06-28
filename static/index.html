@@ -111,10 +111,17 @@
                     </div>
                 </div>
 
-                <div class="legend-container" id="summary-container" style="margin-top: 24px;">
-                    <h4>Análise dos achados (IA Gemini)</h4>
-                    <div id="summary" style="font-size: 0.95rem; color: var(--text-main); line-height: 1.6; white-space: pre-wrap; max-height: 300px; overflow-y: auto; text-align: left; background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.04); padding: 16px; border-radius: 8px;">
-                        Aguardando análise do raio-x panorâmico...
+                <div class="legend-container" id="summary-container">
+                    <h4>Análise dos achados</h4>
+                    <div id="summary">
+                        <div class="summary-placeholder">
+                            <svg class="sparkles-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                                <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5z"/>
+                                <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z"/>
+                            </svg>
+                            <span>Aguardando a análise do raio-x panorâmico para gerar a análise dos achados.</span>
+                        </div>
                     </div>
                 </div>
             </div>

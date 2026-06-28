@@ -334,7 +334,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reseta o texto do resumo Gemini
         const summaryDiv = document.getElementById('summary');
         if (summaryDiv) {
-            summaryDiv.innerText = 'Aguardando análise da radiografia...';
+            summaryDiv.innerHTML = `
+                <div class="summary-placeholder">
+                    <svg class="sparkles-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                        <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5z"/>
+                        <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z"/>
+                    </svg>
+                    <span>Aguardando a análise do raio-x panorâmico para gerar a análise dos achados.</span>
+                </div>
+            `;
         }
 
         // Reseta o estado de visibilidade do olho e das caixas
@@ -431,7 +440,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (summaryStatus) {
             summaryStatus.innerText = "Laudo automático dos achados:";
         }
-        summaryDiv.innerHTML = '<span style="color: var(--text-muted); font-style: italic;">Gerando parecer clínico com IA Gemini...</span>';
+        
+        // Exibe o esqueleto animado de carregamento
+        summaryDiv.innerHTML = `
+            <div class="summary-loading">
+                <div class="pulse-line line-1"></div>
+                <div class="pulse-line line-2"></div>
+                <div class="pulse-line line-3"></div>
+                <span class="loading-text">Gerando análise dos achados...</span>
+            </div>
+        `;
 
         try {
             const response = await fetch('/summarize', {
@@ -457,7 +475,16 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryDiv.innerText = data.summary || "Nenhum resumo disponível.";
         } catch (error) {
             console.error('Erro no resumo Gemini:', error);
-            summaryDiv.innerHTML = `<span style="color: #ff6b6b;">Erro ao obter resumo da IA: ${error.message}</span>`;
+            summaryDiv.innerHTML = `
+                <div class="summary-error">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span>Erro ao obter resumo da IA: ${error.message}</span>
+                </div>
+            `;
         }
     }
 });
