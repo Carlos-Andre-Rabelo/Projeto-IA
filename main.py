@@ -12,8 +12,9 @@ from google import genai
 from pydantic import BaseModel, Field
 from typing import List
 
-# Carrega variáveis de ambiente do .env
-load_dotenv()
+# Carrega variáveis de ambiente do .env de forma robusta usando caminho absoluto
+dotenv_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(dotenv_path)
 
 # Inicializa o cliente Gemini
 api_key = os.getenv("GEMINI_API_KEY")

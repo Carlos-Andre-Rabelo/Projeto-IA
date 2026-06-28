@@ -379,11 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error(json.error);
             }
 
-            // Set the local image as source
-            const imageUrl = URL.createObjectURL(currentFile);
-            resultImage.src = imageUrl;
-            
             // Wait for image to load to get dimensions correct before drawing boxes
+            const imageUrl = URL.createObjectURL(currentFile);
+            
+            // Wait for image to load to get dimensions correct before drawing boxes (definido antes de definir o .src)
             resultImage.onload = () => {
                 originalImageWidth = json.width;
                 originalImageHeight = json.height;
@@ -397,6 +396,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Dispara a geração de resumo clínico com o Gemini de forma assíncrona
                 gerarResumo(currentBoxesData);
             };
+
+            // Set the local image as source (dispara o onload)
+            resultImage.src = imageUrl;
 
         } catch (error) {
             console.error('Error:', error);
@@ -416,7 +418,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (!summaryDiv) return;
 
-        summaryStatus.innerText = "Laudo automático dos achados:";
+        if (summaryStatus) {
+            summaryStatus.innerText = "Laudo automático dos achados:";
+        }
         summaryDiv.innerHTML = '<span style="color: var(--text-muted); font-style: italic;">Gerando parecer clínico com IA Gemini...</span>';
 
         try {
