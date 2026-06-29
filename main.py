@@ -87,10 +87,10 @@ TEETH_MODEL_NAME = "yolov8s_robust.pt"
 
 # Pré-carrega o modelo padrão e o de dentes
 get_model(TEETH_MODEL_NAME)
-get_model("best.pt")
+get_model("treino_small_1280_tuned-5.pt")
 
 @app.post("/predict")
-async def predict(file: UploadFile = File(...), conf: float = Form(0.15), model_name: str = Form("best.pt")):
+async def predict(file: UploadFile = File(...), conf: float = Form(0.15), model_name: str = Form("treino_small_1280_tuned-5.pt")):
     model = get_model(model_name)
     if not model:
         return {"error": f"Modelo '{model_name}' não foi carregado corretamente ou não existe."}

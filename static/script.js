@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const confSlider = document.getElementById('conf-slider');
     const confValue = document.getElementById('conf-value');
-    const modelSelect = document.getElementById('model-select');
     
     const boundingBoxesContainer = document.getElementById('bounding-boxes-container');
     const toggleBoxesBtn = document.getElementById('toggle-boxes-btn');
@@ -415,13 +414,6 @@ function exportResultsToCsv(){
         }
     });
 
-    modelSelect.addEventListener('change', (e) => {
-        // Re-run the analysis when user changes the model
-        if (currentFile) {
-            handleFile(currentFile, false);
-        }
-    });
-
     // Reset button
     btnReset.addEventListener('click', () => {
         exitFullscreen();
@@ -489,7 +481,6 @@ function exportResultsToCsv(){
         const formData = new FormData();
         formData.append('file', file);
         formData.append('conf', confSlider.value); // Envia o valor do slider
-        formData.append('model_name', modelSelect.value); // Envia o modelo selecionado
 
         try {
             // Send to backend

@@ -43,16 +43,6 @@
             <div class="result-area hidden" id="result-area">
                 <div class="controls-panel">
                     <div class="control-box">
-                        <label for="model-select">Modelo de IA:</label>
-                        <select id="model-select">
-                            <option value="best.pt">best.pt (Original)</option>
-                            <option value="treino_small_1280_tuned-5.pt" selected>treino_small_1280_tuned-5 (Melhor Resultado)</option>
-                            <option value="treino_medium_1280_adamw-3.pt">treino_medium_1280_adamw-3 (Médio)</option>
-                            <option value="train-5.pt">train-5</option>
-                            <option value="train_clinical-2.pt">train_clinical-2</option>
-                        </select>
-                    </div>
-                    <div class="control-box">
                         <label for="conf-slider">Confiança Mínima: <span id="conf-value">15%</span></label>
                         <input type="range" id="conf-slider" min="0.01" max="0.99" step="0.01" value="0.15">
                         <small>Deslize para a esquerda para aumentar a sensibilidade (mostrar mais casos).</small>
