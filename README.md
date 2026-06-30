@@ -1,4 +1,5 @@
 # Projeto IA: Detecção Odontológica Inteligente
+Este trabalho foi desenvolvido pelos discentes Ana Cecília Seoud Pinheiro e Carlos André Barros Rabelo para a disciplina de Inteligência Artificial da Universidade Federal do Oeste do Pará (UFOPA) correspondente ao período curricular 2026.1. 
 
 Este projeto é uma aplicação web completa (backend e frontend) para detectar e localizar doenças em radiografias odontológicas utilizando modelos treinados da família YOLOv8. O sistema suporta Test-Time Augmentation (TTA) nativamente e possui um layout moderno de vidro fosco (glassmorphism) totalmente responsivo.
 
@@ -8,6 +9,10 @@ Este projeto é uma aplicação web completa (backend e frontend) para detectar 
 - `static/`: Contém a interface do usuário (HTML, CSS e JavaScript).
 - `main.py`: O servidor FastAPI que integra a Inteligência Artificial e expõe a rota web.
 - `requirements.txt`: As dependências do projeto em Python.
+
+## Base de Dados Utilizada
+
+O modelo foi treinado com a seguinte base de dados: [https://zenodo.org/records/7812323#.ZDQE1uxBwUG]
 
 ## Como instalar e executar localmente
 
