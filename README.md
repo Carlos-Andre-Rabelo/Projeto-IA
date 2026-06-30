@@ -1,4 +1,5 @@
 # Projeto IA: Detecção Odontológica Inteligente
+Este trabalho foi desenvolvido pelos discentes Ana Cecília Seoud Pinheiro e Carlos André Barros Rabelo para a disciplina de Inteligência Artificial da Universidade Federal do Oeste do Pará (UFOPA) correspondente ao período curricular 2026.1. 
 
 Este projeto é uma aplicação web completa (backend e frontend) para detectar e localizar doenças em radiografias odontológicas utilizando modelos treinados da família YOLOv8. O sistema suporta Test-Time Augmentation (TTA) nativamente e possui um layout moderno de vidro fosco (glassmorphism) totalmente responsivo.
 
@@ -8,6 +9,10 @@ Este projeto é uma aplicação web completa (backend e frontend) para detectar 
 - `static/`: Contém a interface do usuário (HTML, CSS e JavaScript).
 - `main.py`: O servidor FastAPI que integra a Inteligência Artificial e expõe a rota web.
 - `requirements.txt`: As dependências do projeto em Python.
+
+## Base de Dados Utilizada
+
+O modelo foi treinado com a seguinte base de dados: [https://zenodo.org/records/7812323#.ZDQE1uxBwUG]
 
 ## Como instalar e executar localmente
 
@@ -23,7 +28,15 @@ Abra o seu terminal (Prompt de Comando ou PowerShell), navegue até a pasta dest
 pip install -r requirements.txt
 ```
 
-### 3. Rodando o servidor
+### 3. Configuração das Variáveis de Ambiente
+O projeto agora integra a API do Gemini para gerar laudos clínicos automatizados baseados nas detecções da IA.
+1. Crie um arquivo chamado `.env` na raiz do projeto.
+2. Adicione a sua chave de API do Google AI Studio nele, conforme o modelo do arquivo `.env.example`:
+   ```env
+   GEMINI_API_KEY=SUA_CHAVE_AQUI
+   ```
+
+### 4. Rodando o servidor
 Ainda no terminal, execute o servidor FastAPI usando o pacote Uvicorn:
 
 ```bash
@@ -31,7 +44,7 @@ python -m uvicorn main:app --reload
 ```
 *Nota: A flag `--reload` faz o servidor reiniciar sozinho caso você modifique algum arquivo do código.*
 
-### 4. Acessando a Interface Web
+### 5. Acessando a Interface Web
 Assim que o servidor carregar e exibir a mensagem "Application startup complete", abra o seu navegador favorito e acesse:
 
 👉 **[http://localhost:8000](http://localhost:8000)**

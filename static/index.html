@@ -17,8 +17,8 @@
     
     <div class="container">
         <header>
-            <h1>Diagnóstico <span>Odontológico</span></h1>
-            <p>Faça o upload de uma radiografia e nossa IA analisará a presença de anomalias em cada dente instantaneamente.</p>
+            <h1>Análise <span>Odontológica</span></h1>
+            <p>Faça o upload de um raio-x panorâmico e nossa IA analisará a presença de anomalias em cada dente instantaneamente.</p>
         </header>
 
         <main>
@@ -30,24 +30,120 @@
                         <polyline points="17 8 12 3 7 8"></polyline>
                         <line x1="12" y1="3" x2="12" y2="15"></line>
                     </svg>
-                    <h3>Clique ou arraste uma radiografia aqui</h3>
+                    <h3>Clique ou arraste um raio-x panorâmico aqui</h3>
                     <p>Formatos suportados: JPG, JPEG, PNG</p>
                 </div>
             </div>
 
             <div class="loading-state hidden" id="loading-state">
                 <div class="spinner"></div>
-                <p>Analisando a radiografia usando o modelo YOLO...</p>
+                <p>Analisando o raio-x panorâmico usando o modelo YOLO...</p>
             </div>
 
             <div class="result-area hidden" id="result-area">
-                <h3>Resultado da IA</h3>
-                <div class="image-wrapper">
-                    <img id="result-image" src="" alt="Resultado da Detecção">
+                <div class="controls-panel">
+                    <div class="control-box">
+                        <label for="conf-slider">Confiança Mínima: <span id="conf-value">15%</span></label>
+                        <input type="range" id="conf-slider" min="0.01" max="0.99" step="0.01" value="0.15">
+                        <small>Deslize para a esquerda para aumentar a sensibilidade (mostrar mais casos).</small>
+                    </div>
                 </div>
-                <button class="btn-reset" id="btn-reset">Analisar nova radiografia</button>
+
+                <h3>Resultado da IA</h3>
+                <div class="result-main-layout">
+                    <div class="image-wrapper" id="image-wrapper">
+                        <div class="image-controls-column">
+                            <button class="toggle-boxes-btn" id="toggle-boxes-btn" title="Mostrar/Esconder detecções">
+                                <svg class="eye-icon open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg class="eye-icon closed" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </button>
+                            <button class="fullscreen-btn" id="fullscreen-btn" title="Alternar Tela Cheia">
+                                <svg class="fullscreen-icon enter" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+                                </svg>
+                                <svg class="fullscreen-icon exit" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                                    <path d="M4 14h6v6m10-6h-6v6M4 10h6V4m10 6h-6V4"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <img id="result-image" src="" alt="Resultado da Detecção">
+                        <div id="bounding-boxes-container"></div>
+                    </div>
+                    
+                    <div class="result-sidebar">
+                        <div class="legend-container">
+                            <h4>Legenda de Detecção</h4>
+                            <p class="legend-subtitle">Clique para filtrar as marcações:</p>
+                            <ul id="legend-list">
+                                <li class="legend-item active" data-class="Impacted">
+                                    <span class="color-box" style="background-color: #042aff;"></span>
+                                    <span class="legend-text">Dente Impactado</span>
+                                </li>
+                                <li class="legend-item active" data-class="Caries">
+                                    <span class="color-box" style="background-color: #ffaa00;"></span>
+                                    <span class="legend-text">Cárie</span>
+                                </li>
+                                <li class="legend-item active" data-class="Periapical Lesion">
+                                    <span class="color-box" style="background-color: #00aa00;"></span>
+                                    <span class="legend-text">Lesão Periapical</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <button class="btn-export" id="btn-export" type="button">Exportar análise</button>
+                        <button class="btn-reset" id="btn-reset">Analisar novo raio-x panorâmico</button>
+                    </div>
+                </div>
+
+                <div class="legend-container" id="summary-container">
+                    <h4>Análise dos achados</h4>
+                    <div id="summary">
+                        <div class="summary-placeholder">
+                            <svg class="sparkles-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                                <path d="m5 3 1 2.5L8.5 6 6 7 5 9.5 4 7 1.5 6 4 5.5z"/>
+                                <path d="m19 17 1 2.5 2.5.5-2.5 1-1 2.5-1-2.5-2.5-1 2.5-1z"/>
+                            </svg>
+                            <span>Aguardando a análise do raio-x panorâmico para gerar a análise dos achados.</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
+        
+        <footer>
+            <p class="disclaimer"><strong>Aviso Importante:</strong> Este é um projeto desenvolvido estritamente para fins acadêmicos. Os resultados gerados pela inteligência artificial servem apenas como caráter informativo e não são 100% precisos. Em caso de dúvidas ou para diagnósticos clínicos, consulte sempre um profissional de odontologia qualificado.</p>
+        </footer>
+    </div>
+
+    <!-- Modal for Disease Info -->
+    <div class="modal-overlay" id="info-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalhes da Detecção</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Anomalia/Doença:</span>
+                    <span class="modal-info-value" id="modal-disease">-</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Dente Relacionado:</span>
+                    <span class="modal-info-value" id="modal-tooth">-</span>
+                </div>
+                <div class="modal-info-item">
+                    <span class="modal-info-label">Certeza (Confiança):</span>
+                    <span class="modal-info-value" id="modal-confidence">-</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

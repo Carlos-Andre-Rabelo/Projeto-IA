@@ -5,3 +5,5 @@ ultralytics
 opencv-python
 numpy
 Pillow
+google-genai
+python-dotenv
